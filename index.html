@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static QR Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        /* Custom tweaks */
+        body { background-color: #0f172a; color: #f8fafc; }
+        .input-glow:focus { box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md text-center border border-slate-700">
+        <h1 class="text-3xl font-bold mb-2 text-sky-400">QR Code Generator</h1>
+        <p class="text-slate-400 mb-6">Enter a URL below to create your QR code.</p>
+
+        <div class="space-y-4">
+            <input 
+                type="text" 
+                id="urlInput" 
+                placeholder="https://example.com" 
+                class="w-full p-3 rounded-lg bg-slate-900 border border-slate-600 text-white placeholder-slate-500 outline-none focus:border-sky-500 input-glow transition-all"
+            >
+            <button 
+                onclick="generateQR()" 
+                class="w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold py-3 rounded-lg transition-colors shadow-lg"
+            >
+                Generate QR
+            </button>
+        </div>
+
+        <div id="qr-container" class="mt-8 flex justify-center p-4 bg-white rounded-xl hidden">
+            <div id="qrcode"></div>
+        </div>
+        
+        <button 
+            id="downloadBtn" 
+            onclick="downloadQR()" 
+            class="mt-4 text-sm text-slate-400 hover:text-white underline hidden"
+        >
+            Download Image
+        </button>
+    </div>
+
+    <script>
+        const qrContainer = document.getElementById("qrcode");
+        const containerDiv = document.getElementById("qr-container");
+        const downloadBtn = document.getElementById("downloadBtn");
+        let qrcode = null;
+
+        function generateQR() {
+            const url = document.getElementById("urlInput").value;
+
+            if (!url) {
+                alert("Please enter a valid URL!");
+                return;
+            }
+
+            // Clear previous QR code
+            qrContainer.innerHTML = "";
+            containerDiv.classList.remove("hidden");
+            downloadBtn.classList.remove("hidden");
+
+            // Generate new QR code
+            qrcode = new QRCode(qrContainer, {
+                text: url,
+                width: 200,
+                height: 200,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        function downloadQR() {
+            const img = qrContainer.querySelector("img");
+            if (img) {
+                const link = document.createElement("a");
+                link.href = img.src;
+                link.download = "qrcode.png";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    </script>
+</body>
+</html>
